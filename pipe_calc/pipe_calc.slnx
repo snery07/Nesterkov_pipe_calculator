@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="pipe_calc/pipe_calc.vcxproj" />
+  <Project Path="pipe_calc/pipe_calc.vcxproj" Id="86c95e80-3fa5-432a-a075-4bb8c8e8fbcf" />
 </Solution>
