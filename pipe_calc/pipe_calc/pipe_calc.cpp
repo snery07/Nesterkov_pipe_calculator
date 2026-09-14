@@ -105,7 +105,7 @@ string string_input(string message)
 
 void menu()
 {
-    cout << " 1. Add pipe\n";
+    cout << "\n\n 1. Add pipe\n";
     cout << " 2. Add cs\n";
     cout << " 3. View all objects\n";
     cout << " 4. Edit pipe\n";
@@ -119,4 +119,27 @@ int main()
 {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
+    int option;
+    while (true)
+    {
+        menu();
+        option = int_input("\nSelect one of the menu items: ");
+
+        if (option == 1); 
+        else if (option == 2);
+        else if (option == 3);
+        else if (option == 4);
+        else if (option == 5);
+        else if (option == 6);
+        else if (option == 7);
+        else if (option == 0)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Wrong menu item.\n";
+        }
+    }
+    return 0;
 }
