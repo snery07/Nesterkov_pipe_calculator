@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <Windows.h>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -103,6 +104,31 @@ string string_input(string message)
         if (input == "")
         {
             cout << "Cannot be empty. Enter something.";
+        }
+        else
+        {
+            return input;
+        }
+    }
+}
+
+string filename_input(string message)
+{
+    string input;
+    while (true)
+    {
+        cout << message;
+        if (input == "")
+        {
+            cout << "Cannot be empty. Enter something.";
+        }
+        else if (input.length() < 4)
+        {
+            cout << "File name is too short, must be like name.txt\n";
+        }
+        else if (input.substr(input.length() - 4) != ".txt")
+        {
+            cout << "File name must end with .txt\n";
         }
         else
         {
@@ -254,6 +280,40 @@ void show_pipe()
     cout << "Under repair status: " << pipe.in_repair << "\n";
 }
 
+// file
+
+void save_data()
+{
+    string name_file;
+    name_file = filename_input("Enter the name of the file where the data should be saved (if the file does not yet exist, enter the name and it will be created automatically):");
+    ofstream file(name_file);
+    file << pipe_exist << "\n";
+    if (pipe_exist)
+    {
+        file << pipe.name_pipe << "\n";
+        file << pipe.length << "\n";
+        file << pipe.diam << "\n";
+        file << pipe.in_repair << "\n";
+    }
+    
+    file << cs_exist << "\n";
+    if (cs_exist)
+    {
+        file << cs.name_cs << "\n";
+        file << cs.amount_ws << "\n";
+        file << cs.amount_ws_in_progress << "\n";
+        file << cs.class_cs << "\n";
+    }
+
+    file.close();
+    cout << "The data was saved in file " << name_file << "\n";
+}
+
+void load_data()
+{
+
+}
+
 // menu
 
 void menu()
@@ -263,8 +323,8 @@ void menu()
     cout << " 3. View all objects\n";
     cout << " 4. Edit pipe\n";
     cout << " 5. Edit compressor station\n";
-    cout << " 6. Save\n";
-    cout << " 7. Load\n";
+    cout << " 6. Save data to a file\n";
+    cout << " 7. Load data from a file\n";
     cout << " 0. Exit\n";
 }
 
@@ -283,8 +343,8 @@ int main()
         else if (option == 3) { show_cs(); show_pipe(); }
         else if (option == 4) edit_pipe();
         else if (option == 5) edit_cs();
-        else if (option == 6);
-        else if (option == 7);
+        else if (option == 6) save_data();
+        else if (option == 7) load_data();
         else if (option == 0)
         {
             break;
