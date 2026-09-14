@@ -118,6 +118,7 @@ string filename_input(string message)
     while (true)
     {
         cout << message;
+        getline(cin, input);
         if (input == "")
         {
             cout << "Cannot be empty. Enter something.";
