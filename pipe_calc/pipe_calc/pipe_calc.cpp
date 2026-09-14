@@ -6,7 +6,7 @@ using namespace std;
 
 struct Pipe
 {
-    string name_p;
+    string name_pipe;
     int diam;
     double length;
     bool in_repair;
@@ -40,6 +40,11 @@ int int_input(string message)
             cin.ignore(1111, '\n');
             cout << "The value entered was not a integer number. Enter a valid value.\n";
         }
+        else if (input < 0)
+        {
+            cin.ignore(1111, '\n');
+            cout << "The value cannot be negative. Enter a valid value.\n";
+        }
         else
         {
             cin.ignore(1111, '\n');
@@ -61,6 +66,11 @@ double double_input(string message)
             cin.ignore(1111, '\n');
             cout << "The value entered was not a number. Enter a valid value.\n";
         }
+        else if (input < 0)
+        {
+            cin.ignore(1111, '\n');
+            cout << "The value cannot be negative. Enter a valid value.\n";
+        }
         else
         {
             cin.ignore(1111, '\n');
@@ -75,11 +85,11 @@ bool bool_input(string message)
     string input;
     while (true)
     {
-        cout << message << "(y/n)";
+        cout << message << "(y/n) ";
         getline(cin, input);
         if (input == "y") return true;
         if (input == "n") return false;
-        cout << "Enter y or n";
+        cout << "Enter y or n\n";
     }
 }
 
@@ -99,6 +109,149 @@ string string_input(string message)
             return input;
         }
     }
+}
+
+// addition functions
+
+void add_cs()
+{
+    cout << "\nEnter the data for the compressor station:\n";
+    cs.name_cs = string_input("Name: ");
+    cs.amount_ws = int_input("Amount of workshops: ");
+    cs.amount_ws_in_progress = int_input("Amount of workshops in progress: ");
+    if (cs.amount_ws_in_progress > cs.amount_ws)
+    {
+        cout << "Amount of workshops in progress cannot be greater then amount of workshops\n";
+        cs.amount_ws_in_progress = int_input("Amount of workshops in progress: ");
+    }
+    cs.class_cs = string_input("Class of compressor station: ");
+    cs_exist = true;
+    cout << "Compressor station added!\n";
+}
+
+void add_pipe()
+{
+    cout << "\nEnter the data for the pipe:\n";
+    pipe.name_pipe = string_input("Kilometer mark (name): ");
+    pipe.length = double_input("Length (km): ");
+    pipe.diam = int_input("Diametr (mm): ");
+    pipe.in_repair = bool_input("Under repair status: ");
+    pipe_exist = true;
+    cout << "Pipe added!\n";
+    
+}
+
+// editing functions
+
+void edit_cs()
+{
+    if (cs_exist == false)
+    {
+        cout << "The compressor station was not added yet. Add it first.\n";
+        return;
+    }
+    int option;
+    cout << "The workshops is currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
+    cout << "1. Start worksop\n";
+    cout << "2. Stop workshop\n";
+    cout << "0. Exit\n";
+    option = int_input("Select one of the menu items: ");
+    int amount_ws;
+    if (option == 1)
+    {
+        if (cs.amount_ws_in_progress == cs.amount_ws)
+        {
+            cout << "All worksops already in progress!";
+        }
+        else
+        {
+            amount_ws = int_input("Enter amount of workshops you want to start: ");
+            if (amount_ws > (cs.amount_ws - cs.amount_ws_in_progress))
+            {
+                cout << "Amount of workshops you want to start cannot be greater than amount of available workshops!\n";
+            }
+            else
+            {
+                cs.amount_ws_in_progress += amount_ws;
+                cout << "The workshops started. Currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
+            }
+        }
+    }
+    if (option == 2)
+    {
+        if (cs.amount_ws_in_progress == 0)
+        {
+            cout << "Not a single workshop had been launched yet!\n";
+        }
+        else
+        {
+            amount_ws = int_input("Enter amount of workshops you want to stop: ");
+            if (amount_ws > (cs.amount_ws - cs.amount_ws_in_progress))
+            {
+                cout << "Amount of workshops you want to stop cannot be greater than amount of available workshops!\n";
+            }
+            else
+            {
+                cs.amount_ws_in_progress -= amount_ws;
+                cout << "The workshops stopped. Currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
+            }
+        }
+    }
+    if (option == 0)
+    {
+        return;
+    }
+}
+
+void edit_pipe()
+{
+    if (pipe_exist == false)
+    {
+        cout << "The pipe was not added yet. Add it first.\n";
+        return;
+    }
+    int option;
+    cout << "1. Edit under repair status\n";
+    cout << "0. Exit\n";
+    option = int_input("Select one of the menu items: ");
+    if (option == 1)
+    {
+        cout << "Under repair status: " << pipe.in_repair << "\n";
+        pipe.in_repair = bool_input("If you want to edit under repair status to in repair enter yes. If you want to edit under repair status to not in repair enter no.\n");
+        cout << "Changed under repair status: " << pipe.in_repair << "\n";
+    }
+    if (option == 0)
+    {
+        return;
+    }
+}
+
+//show functions
+
+void show_cs()
+{
+    if (cs_exist == false)
+    {
+        cout << "The compressor station was not added yet. Add it first.\n";
+        return;
+    }
+    cout << "Name: " << cs.name_cs << "\n";
+    cout << "Amount of workshops:  " << cs.amount_ws << "\n";
+    cout << "Amount of workshops in progress " << cs.amount_ws_in_progress << "\n";
+    cout << "Class of compressor station: " << cs.class_cs << "\n";
+}
+
+void show_pipe()
+{
+    if (pipe_exist == false)
+    {
+        cout << "The pipe was not added yet. Add it first.\n";
+        return;
+    }
+    cout << "Kilometer mark (name): " << pipe.name_pipe << "\n";
+    cout << "Length (km):  " << pipe.length << "\n";
+    cout << "Diametr (mm): " << pipe.diam << "\n";
+    cout << "Under repair status: " << pipe.in_repair << "\n";
 }
 
 // menu
@@ -125,11 +278,11 @@ int main()
         menu();
         option = int_input("\nSelect one of the menu items: ");
 
-        if (option == 1); 
-        else if (option == 2);
-        else if (option == 3);
-        else if (option == 4);
-        else if (option == 5);
+        if (option == 1) add_pipe(); 
+        else if (option == 2) add_cs();
+        else if (option == 3) { show_cs(); show_pipe(); }
+        else if (option == 4) edit_pipe();
+        else if (option == 5) edit_cs();
         else if (option == 6);
         else if (option == 7);
         else if (option == 0)
