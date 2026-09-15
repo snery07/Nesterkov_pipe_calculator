@@ -41,10 +41,10 @@ int int_input(string message)
             cin.ignore(1111, '\n');
             cout << "The value entered was not a integer number. Enter a valid value.\n";
         }
-        else if (input < 0)
+        else if (input <= 0)
         {
             cin.ignore(1111, '\n');
-            cout << "The value cannot be negative. Enter a valid value.\n";
+            cout << "The value must be positive. Enter a valid value.\n";
         }
         else
         {
@@ -67,10 +67,10 @@ double double_input(string message)
             cin.ignore(1111, '\n');
             cout << "The value entered was not a number. Enter a valid value.\n";
         }
-        else if (input < 0)
+        else if (input <= 0)
         {
             cin.ignore(1111, '\n');
-            cout << "The value cannot be negative. Enter a valid value.\n";
+            cout << "The value must be positive. Enter a valid value.\n";
         }
         else
         {
@@ -160,25 +160,11 @@ void add_pipe()
 {
     cout << "\nEnter the data for the pipe:\n";
     pipe.name_pipe = string_input("Kilometer mark (name): ");
-
     pipe.length = double_input("Length (km): ");
-    while (pipe.length <= 0)
-    {
-        cout << "Length must be greater than zero.\n";
-        pipe.length = double_input("Length (km): ");
-    }
-
-    pipe.diam = int_input("Diametr (mm): ");
-    while (pipe.diam <= 0)
-    {
-        cout << "Diametr must be greater than zero.\n";
-        pipe.diam = int_input("Diametr (mm): ");
-    }
-
+    pipe.diam = int_input("Diameter (mm): ");
     pipe.in_repair = bool_input("Under repair status: ");
     pipe_exist = true;
     cout << "Pipe added!\n";
-
 }
 
 // editing functions
@@ -298,7 +284,7 @@ void show_pipe()
     }
     cout << "Kilometer mark (name): " << pipe.name_pipe << "\n";
     cout << "Length (km):  " << pipe.length << "\n";
-    cout << "Diametr (mm): " << pipe.diam << "\n";
+    cout << "Diameter (mm): " << pipe.diam << "\n";
     cout << "Under repair status: " << pipe.in_repair << "\n";
 }
 
