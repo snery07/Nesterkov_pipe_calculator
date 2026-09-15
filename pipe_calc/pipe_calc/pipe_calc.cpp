@@ -80,7 +80,7 @@ double double_input(string message)
     }
 }
 
-bool bool_input(string message) 
+bool bool_input(string message)
 
 {
     string input;
@@ -103,7 +103,7 @@ string string_input(string message)
         getline(cin, input);
         if (input == "")
         {
-            cout << "Cannot be empty. Enter something.";
+            cout << "Cannot be empty. Enter something.\n";
         }
         else
         {
@@ -121,7 +121,7 @@ string filename_input(string message)
         getline(cin, input);
         if (input == "")
         {
-            cout << "Cannot be empty. Enter something.";
+            cout << "Cannot be empty. Enter something.\n";
         }
         else if (input.length() < 4)
         {
@@ -146,7 +146,7 @@ void add_cs()
     cs.name_cs = string_input("Name: ");
     cs.amount_ws = int_input("Amount of workshops: ");
     cs.amount_ws_in_progress = int_input("Amount of workshops in progress: ");
-    if (cs.amount_ws_in_progress > cs.amount_ws)
+    while (cs.amount_ws_in_progress > cs.amount_ws)
     {
         cout << "Amount of workshops in progress cannot be greater then amount of workshops\n";
         cs.amount_ws_in_progress = int_input("Amount of workshops in progress: ");
@@ -160,12 +160,25 @@ void add_pipe()
 {
     cout << "\nEnter the data for the pipe:\n";
     pipe.name_pipe = string_input("Kilometer mark (name): ");
+
     pipe.length = double_input("Length (km): ");
+    while (pipe.length <= 0)
+    {
+        cout << "Length must be greater than zero.\n";
+        pipe.length = double_input("Length (km): ");
+    }
+
     pipe.diam = int_input("Diametr (mm): ");
+    while (pipe.diam <= 0)
+    {
+        cout << "Diametr must be greater than zero.\n";
+        pipe.diam = int_input("Diametr (mm): ");
+    }
+
     pipe.in_repair = bool_input("Under repair status: ");
     pipe_exist = true;
     cout << "Pipe added!\n";
-    
+
 }
 
 // editing functions
@@ -204,7 +217,7 @@ void edit_cs()
             }
         }
     }
-    if (option == 2)
+    else if (option == 2)
     {
         if (cs.amount_ws_in_progress == 0)
         {
@@ -213,9 +226,9 @@ void edit_cs()
         else
         {
             amount_ws = int_input("Enter amount of workshops you want to stop: ");
-            if (amount_ws > (cs.amount_ws - cs.amount_ws_in_progress))
+            if (amount_ws > cs.amount_ws_in_progress)
             {
-                cout << "Amount of workshops you want to stop cannot be greater than amount of available workshops!\n";
+                cout << "Amount of workshops you want to stop cannot be greater than amount of workshops currently in progress!\n";
             }
             else
             {
@@ -224,9 +237,13 @@ void edit_cs()
             }
         }
     }
-    if (option == 0)
+    else if (option == 0)
     {
         return;
+    }
+    else
+    {
+        cout << "Wrong menu item.\n";
     }
 }
 
@@ -247,9 +264,13 @@ void edit_pipe()
         pipe.in_repair = bool_input("If you want to edit under repair status to in repair enter yes. If you want to edit under repair status to not in repair enter no.\n");
         cout << "Changed under repair status: " << pipe.in_repair << "\n";
     }
-    if (option == 0)
+    else if (option == 0)
     {
         return;
+    }
+    else
+    {
+        cout << "Wrong menu item.\n";
     }
 }
 
@@ -263,8 +284,8 @@ void show_cs()
         return;
     }
     cout << "Name: " << cs.name_cs << "\n";
-    cout << "Amount of workshops:  " << cs.amount_ws << "\n";
-    cout << "Amount of workshops in progress " << cs.amount_ws_in_progress << "\n";
+    cout << "Amount of workshops: " << cs.amount_ws << "\n";
+    cout << "Amount of workshops in progress: " << cs.amount_ws_in_progress << "\n";
     cout << "Class of compressor station: " << cs.class_cs << "\n";
 }
 
@@ -286,8 +307,14 @@ void show_pipe()
 void save_data()
 {
     string name_file;
-    name_file = filename_input("Enter the name of the file where the data should be saved (if the file does not yet exist, enter the name and it will be created automatically):");
+    name_file = filename_input("Enter the name of the file where the data should be saved (if the file does not yet exist, enter the name and it will be created automatically): ");
     ofstream file(name_file);
+    if (!file)
+    {
+        cout << "Cannot open file " << name_file << " for save data.\n";
+        return;
+    }
+
     file << pipe_exist << "\n";
     if (pipe_exist)
     {
@@ -296,7 +323,7 @@ void save_data()
         file << pipe.diam << "\n";
         file << pipe.in_repair << "\n";
     }
-    
+
     file << cs_exist << "\n";
     if (cs_exist)
     {
@@ -313,7 +340,7 @@ void save_data()
 void load_data()
 {
     string name_file;
-    name_file = filename_input("Enter the name of the file from which to load the data:");
+    name_file = filename_input("Enter the name of the file from which to load the data: ");
     ifstream file(name_file);
     if (!file)
     {
@@ -345,7 +372,7 @@ void load_data()
             cout << "File is corrupted (invalid pipe data).\n";
             return;
         }
-        if (temp_pipe.name_pipe == "" || temp_pipe.length <= 0 || temp_pipe.diam <= 0) 
+        if (temp_pipe.name_pipe == "" || temp_pipe.length <= 0 || temp_pipe.diam <= 0)
         {
             cout << "File contains invalid pipe values.\n";
             return;
@@ -368,21 +395,22 @@ void load_data()
     file.ignore();
 
     bool loaded_cs_exist = false;
-    if (cs_flag == 1) 
+    if (cs_flag == 1)
     {
         getline(file, temp_cs.name_cs);
-        file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress >> temp_cs.class_cs;
+        file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress;
         if (file.fail())
         {
             cout << "File is corrupted (invalid CS data).\n";
             return;
         }
-        if (temp_cs.name_cs == "" || temp_cs.amount_ws < 0 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws)
+        file.ignore();
+        getline(file, temp_cs.class_cs);
+        if (temp_cs.name_cs == "" || temp_cs.class_cs == "" || temp_cs.amount_ws < 0 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws)
         {
             cout << "File contains invalid CS values.\n";
             return;
         }
-        file.ignore();
         loaded_cs_exist = true;
     }
     else if (cs_flag != 0)
@@ -395,7 +423,7 @@ void load_data()
     cs_exist = loaded_cs_exist;
     if (loaded_pipe_exist) pipe = temp_pipe;
     if (loaded_cs_exist) cs = temp_cs;
-    cout << "Data loaded from" << name_file << "\n";
+    cout << "Data loaded from " << name_file << "\n";
 }
 
 // menu
@@ -422,7 +450,7 @@ int main()
         menu();
         option = int_input("\nSelect one of the menu items: ");
 
-        if (option == 1) add_pipe(); 
+        if (option == 1) add_pipe();
         else if (option == 2) add_cs();
         else if (option == 3) { show_cs(); show_pipe(); }
         else if (option == 4) edit_pipe();
