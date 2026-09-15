@@ -312,7 +312,90 @@ void save_data()
 
 void load_data()
 {
+    string name_file;
+    name_file = filename_input("Enter the name of the file from which to load the data:");
+    ifstream file(name_file);
+    if (!file)
+    {
+        cout << "File " << name_file << " not found!\n";
+        return;
+    }
+    int pipe_flag;
+    int cs_flag;
+    Pipe temp_pipe;
+    CS temp_cs;
 
+    file >> pipe_flag;
+    if (file.fail())
+    {
+        cout << "File corrupted (invalid pipe flag)!\n";
+        return;
+    }
+    file.ignore();
+
+    bool loaded_pipe_exist = false;
+    if (pipe_flag == 1)
+    {
+        getline(file, temp_pipe.name_pipe);
+        file >> temp_pipe.length;
+        file >> temp_pipe.diam;
+        file >> temp_pipe.in_repair;
+        if (file.fail())
+        {
+            cout << "File is corrupted (invalid pipe data).\n";
+            return;
+        }
+        if (temp_pipe.name_pipe == "" || temp_pipe.length <= 0 || temp_pipe.diam <= 0) 
+        {
+            cout << "File contains invalid pipe values.\n";
+            return;
+        }
+        file.ignore();
+        loaded_pipe_exist = true;
+    }
+    else if (pipe_flag != 0)
+    {
+        cout << "File is corrupted (pipe flag must be 0 or 1).\n";
+        return;
+    }
+
+    file >> cs_flag;
+    if (file.fail())
+    {
+        cout << "File is corrupted (invalid CS flag).\n";
+        return;
+    }
+    file.ignore();
+
+    bool loaded_cs_exist = false;
+    if (cs_flag == 1) 
+    {
+        getline(file, temp_cs.name_cs);
+        file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress >> temp_cs.class_cs;
+        if (file.fail())
+        {
+            cout << "File is corrupted (invalid CS data).\n";
+            return;
+        }
+        if (temp_cs.name_cs == "" || temp_cs.amount_ws < 0 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws)
+        {
+            cout << "File contains invalid CS values.\n";
+            return;
+        }
+        file.ignore();
+        loaded_cs_exist = true;
+    }
+    else if (cs_flag != 0)
+    {
+        cout << "File is corrupted (CS flag must be 0 or 1).\n";
+        return;
+    }
+    file.close();
+    pipe_exist = loaded_pipe_exist;
+    cs_exist = loaded_cs_exist;
+    if (loaded_pipe_exist) pipe = temp_pipe;
+    if (loaded_cs_exist) cs = temp_cs;
+    cout << "Data loaded from" << name_file << "\n";
 }
 
 // menu
