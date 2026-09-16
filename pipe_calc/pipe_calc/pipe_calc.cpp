@@ -21,11 +21,6 @@ struct CS
     string class_cs;
 };
 
-bool pipe_exist = false;
-bool cs_exist = false;
-Pipe pipe;
-CS cs;
-
 // functions for check input
 
 int int_input(string message)
@@ -48,7 +43,6 @@ int int_input(string message)
         }
         else
         {
-            cin.ignore(1111, '\n');
             return input;
         }
     }
@@ -74,20 +68,18 @@ double double_input(string message)
         }
         else
         {
-            cin.ignore(1111, '\n');
             return input;
         }
     }
 }
 
 bool bool_input(string message)
-
 {
     string input;
     while (true)
     {
         cout << message << "(y/n) ";
-        getline(cin, input);
+        getline(cin >> ws, input);
         if (input == "y") return true;
         if (input == "n") return false;
         cout << "Enter y or n\n";
@@ -100,7 +92,7 @@ string string_input(string message)
     while (true)
     {
         cout << message;
-        getline(cin, input);
+        getline(cin >> ws, input);
         if (input == "")
         {
             cout << "Cannot be empty. Enter something.\n";
@@ -118,18 +110,14 @@ string filename_input(string message)
     while (true)
     {
         cout << message;
-        getline(cin, input);
+        getline(cin >> ws, input);
         if (input == "")
         {
             cout << "Cannot be empty. Enter something.\n";
         }
-        else if (input.length() < 4)
+        else if (input.length() < 3)
         {
             cout << "File name is too short, must be like name.txt\n";
-        }
-        else if (input.substr(input.length() - 4) != ".txt")
-        {
-            cout << "File name must end with .txt\n";
         }
         else
         {
@@ -140,7 +128,7 @@ string filename_input(string message)
 
 // addition functions
 
-void add_cs()
+void add_cs(CS& cs, bool& cs_exist)
 {
     cout << "\nEnter the data for the compressor station:\n";
     cs.name_cs = string_input("Name: ");
@@ -156,7 +144,7 @@ void add_cs()
     cout << "Compressor station added!\n";
 }
 
-void add_pipe()
+void add_pipe(Pipe& pipe, bool& pipe_exist)
 {
     cout << "\nEnter the data for the pipe:\n";
     pipe.name_pipe = string_input("Kilometer mark (name): ");
@@ -169,7 +157,7 @@ void add_pipe()
 
 // editing functions
 
-void edit_cs()
+void edit_cs(CS& cs, bool cs_exist)
 {
     if (cs_exist == false)
     {
@@ -233,7 +221,7 @@ void edit_cs()
     }
 }
 
-void edit_pipe()
+void edit_pipe(Pipe& pipe, bool pipe_exist)
 {
     if (pipe_exist == false)
     {
@@ -262,7 +250,7 @@ void edit_pipe()
 
 //show functions
 
-void show_cs()
+void show_cs(const CS& cs, bool cs_exist)
 {
     if (cs_exist == false)
     {
@@ -275,7 +263,7 @@ void show_cs()
     cout << "Class of compressor station: " << cs.class_cs << "\n";
 }
 
-void show_pipe()
+void show_pipe(const Pipe& pipe, bool pipe_exist)
 {
     if (pipe_exist == false)
     {
@@ -290,7 +278,31 @@ void show_pipe()
 
 // file
 
-void save_data()
+void save_pipe(ofstream& file, const Pipe& pipe, bool pipe_exist)
+{
+    file << pipe_exist << "\n";
+    if (pipe_exist)
+    {
+        file << pipe.name_pipe << "\n";
+        file << pipe.length << "\n";
+        file << pipe.diam << "\n";
+        file << pipe.in_repair << "\n";
+    }
+}
+
+void save_cs(ofstream& file, const CS& cs, bool cs_exist)
+{
+    file << cs_exist << "\n";
+    if (cs_exist)
+    {
+        file << cs.name_cs << "\n";
+        file << cs.amount_ws << "\n";
+        file << cs.amount_ws_in_progress << "\n";
+        file << cs.class_cs << "\n";
+    }
+}
+
+void save_data(const Pipe& pipe, bool pipe_exist, const CS& cs, bool cs_exist)
 {
     string name_file;
     name_file = filename_input("Enter the name of the file where the data should be saved (if the file does not yet exist, enter the name and it will be created automatically): ");
@@ -301,29 +313,101 @@ void save_data()
         return;
     }
 
-    file << pipe_exist << "\n";
-    if (pipe_exist)
-    {
-        file << pipe.name_pipe << "\n";
-        file << pipe.length << "\n";
-        file << pipe.diam << "\n";
-        file << pipe.in_repair << "\n";
-    }
-
-    file << cs_exist << "\n";
-    if (cs_exist)
-    {
-        file << cs.name_cs << "\n";
-        file << cs.amount_ws << "\n";
-        file << cs.amount_ws_in_progress << "\n";
-        file << cs.class_cs << "\n";
-    }
+    save_pipe(file, pipe, pipe_exist);
+    save_cs(file, cs, cs_exist);
 
     file.close();
     cout << "The data was saved in file " << name_file << "\n";
 }
 
-void load_data()
+bool load_pipe(ifstream& file, Pipe& out_pipe, bool& out_pipe_exist)
+{
+    int pipe_flag;
+    file >> pipe_flag;
+    if (file.fail())
+    {
+        cout << "File corrupted (invalid pipe flag)!\n";
+        return false;
+    }
+    file.ignore();
+
+    if (pipe_flag == 1)
+    {
+        Pipe temp_pipe;
+        getline(file, temp_pipe.name_pipe);
+        file >> temp_pipe.length;
+        file >> temp_pipe.diam;
+        file >> temp_pipe.in_repair;
+        if (file.fail())
+        {
+            cout << "File is corrupted (invalid pipe data).\n";
+            return false;
+        }
+        if (temp_pipe.name_pipe == "" || temp_pipe.length <= 0 || temp_pipe.diam <= 0)
+        {
+            cout << "File contains invalid pipe values.\n";
+            return false;
+        }
+        file.ignore();
+        out_pipe = temp_pipe;
+        out_pipe_exist = true;
+    }
+    else if (pipe_flag == 0)
+    {
+        out_pipe_exist = false;
+    }
+    else
+    {
+        cout << "File is corrupted (pipe flag must be 0 or 1).\n";
+        return false;
+    }
+    return true;
+}
+
+bool load_cs(ifstream& file, CS& out_cs, bool& out_cs_exist)
+{
+    int cs_flag;
+    file >> cs_flag;
+    if (file.fail())
+    {
+        cout << "File is corrupted (invalid CS flag).\n";
+        return false;
+    }
+    file.ignore();
+
+    if (cs_flag == 1)
+    {
+        CS temp_cs;
+        getline(file, temp_cs.name_cs);
+        file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress;
+        if (file.fail())
+        {
+            cout << "File is corrupted (invalid CS data).\n";
+            return false;
+        }
+        file.ignore();
+        getline(file, temp_cs.class_cs);
+        if (temp_cs.name_cs == "" || temp_cs.class_cs == "" || temp_cs.amount_ws < 0 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws)
+        {
+            cout << "File contains invalid CS values.\n";
+            return false;
+        }
+        out_cs = temp_cs;
+        out_cs_exist = true;
+    }
+    else if (cs_flag == 0)
+    {
+        out_cs_exist = false;
+    }
+    else
+    {
+        cout << "File is corrupted (CS flag must be 0 or 1).\n";
+        return false;
+    }
+    return true;
+}
+
+void load_data(Pipe& pipe, bool& pipe_exist, CS& cs, bool& cs_exist)
 {
     string name_file;
     name_file = filename_input("Enter the name of the file from which to load the data: ");
@@ -333,82 +417,26 @@ void load_data()
         cout << "File " << name_file << " not found!\n";
         return;
     }
-    int pipe_flag;
-    int cs_flag;
-    Pipe temp_pipe;
-    CS temp_cs;
 
-    file >> pipe_flag;
-    if (file.fail())
+    Pipe loaded_pipe;
+    bool loaded_pipe_exist;
+    CS loaded_cs;
+    bool loaded_cs_exist;
+
+    if (!load_pipe(file, loaded_pipe, loaded_pipe_exist))
     {
-        cout << "File corrupted (invalid pipe flag)!\n";
         return;
     }
-    file.ignore();
-
-    bool loaded_pipe_exist = false;
-    if (pipe_flag == 1)
+    if (!load_cs(file, loaded_cs, loaded_cs_exist))
     {
-        getline(file, temp_pipe.name_pipe);
-        file >> temp_pipe.length;
-        file >> temp_pipe.diam;
-        file >> temp_pipe.in_repair;
-        if (file.fail())
-        {
-            cout << "File is corrupted (invalid pipe data).\n";
-            return;
-        }
-        if (temp_pipe.name_pipe == "" || temp_pipe.length <= 0 || temp_pipe.diam <= 0)
-        {
-            cout << "File contains invalid pipe values.\n";
-            return;
-        }
-        file.ignore();
-        loaded_pipe_exist = true;
-    }
-    else if (pipe_flag != 0)
-    {
-        cout << "File is corrupted (pipe flag must be 0 or 1).\n";
         return;
     }
 
-    file >> cs_flag;
-    if (file.fail())
-    {
-        cout << "File is corrupted (invalid CS flag).\n";
-        return;
-    }
-    file.ignore();
-
-    bool loaded_cs_exist = false;
-    if (cs_flag == 1)
-    {
-        getline(file, temp_cs.name_cs);
-        file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress;
-        if (file.fail())
-        {
-            cout << "File is corrupted (invalid CS data).\n";
-            return;
-        }
-        file.ignore();
-        getline(file, temp_cs.class_cs);
-        if (temp_cs.name_cs == "" || temp_cs.class_cs == "" || temp_cs.amount_ws < 0 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws)
-        {
-            cout << "File contains invalid CS values.\n";
-            return;
-        }
-        loaded_cs_exist = true;
-    }
-    else if (cs_flag != 0)
-    {
-        cout << "File is corrupted (CS flag must be 0 or 1).\n";
-        return;
-    }
     file.close();
     pipe_exist = loaded_pipe_exist;
     cs_exist = loaded_cs_exist;
-    if (loaded_pipe_exist) pipe = temp_pipe;
-    if (loaded_cs_exist) cs = temp_cs;
+    if (loaded_pipe_exist) pipe = loaded_pipe;
+    if (loaded_cs_exist) cs = loaded_cs;
     cout << "Data loaded from " << name_file << "\n";
 }
 
@@ -430,19 +458,25 @@ int main()
 {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
+
+    bool pipe_exist = false;
+    bool cs_exist = false;
+    Pipe pipe;
+    CS cs;
+
     int option;
     while (true)
     {
         menu();
         option = int_input("\nSelect one of the menu items: ");
 
-        if (option == 1) add_pipe();
-        else if (option == 2) add_cs();
-        else if (option == 3) { show_cs(); show_pipe(); }
-        else if (option == 4) edit_pipe();
-        else if (option == 5) edit_cs();
-        else if (option == 6) save_data();
-        else if (option == 7) load_data();
+        if (option == 1) add_pipe(pipe, pipe_exist);
+        else if (option == 2) add_cs(cs, cs_exist);
+        else if (option == 3) { show_cs(cs, cs_exist); show_pipe(pipe, pipe_exist); }
+        else if (option == 4) edit_pipe(pipe, pipe_exist);
+        else if (option == 5) edit_cs(cs, cs_exist);
+        else if (option == 6) save_data(pipe, pipe_exist, cs, cs_exist);
+        else if (option == 7) load_data(pipe, pipe_exist, cs, cs_exist);
         else if (option == 0)
         {
             break;
