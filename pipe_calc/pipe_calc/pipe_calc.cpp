@@ -41,7 +41,7 @@ int int_input(string message)
             cin.ignore(1111, '\n');
             cout << "The value entered was not a integer number. Enter a valid value.\n";
         }
-        else if (input <= 0)
+        else if (input < 0)
         {
             cin.ignore(1111, '\n');
             cout << "The value must be positive. Enter a valid value.\n";
