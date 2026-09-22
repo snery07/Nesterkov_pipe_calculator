@@ -38,7 +38,6 @@ int int_input(string message)
         }
         else if (input < 0)
         {
-            cin.ignore(1111, '\n');
             cout << "The value must be positive. Enter a valid value.\n";
         }
         else
@@ -63,7 +62,6 @@ double double_input(string message)
         }
         else if (input <= 0)
         {
-            cin.ignore(1111, '\n');
             cout << "The value must be positive. Enter a valid value.\n";
         }
         else
@@ -157,6 +155,50 @@ void add_pipe(Pipe& pipe, bool& pipe_exist)
 
 // editing functions
 
+void start_workshop(CS& cs, bool cs_exist)
+{
+    int amount_ws;
+    if (cs.amount_ws_in_progress == cs.amount_ws)
+    {
+        cout << "All worksops already in progress!";
+    }
+    else
+    {
+        amount_ws = int_input("Enter amount of workshops you want to start: ");
+        if (amount_ws > (cs.amount_ws - cs.amount_ws_in_progress))
+        {
+            cout << "Amount of workshops you want to start cannot be greater than amount of available workshops!\n";
+        }
+        else
+        {
+            cs.amount_ws_in_progress += amount_ws;
+            cout << "The workshops started. Currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
+        }
+    }
+}
+
+void stop_workshop(CS& cs, bool cs_exist)
+{
+    int amount_ws;
+    if (cs.amount_ws_in_progress == 0)
+    {
+        cout << "Not a single workshop had been launched yet!\n";
+    }
+    else
+    {
+        amount_ws = int_input("Enter amount of workshops you want to stop: ");
+        if (amount_ws > cs.amount_ws_in_progress)
+        {
+            cout << "Amount of workshops you want to stop cannot be greater than amount of workshops currently in progress!\n";
+        }
+        else
+        {
+            cs.amount_ws_in_progress -= amount_ws;
+            cout << "The workshops stopped. Currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
+        }
+    }
+}
+
 void edit_cs(CS& cs, bool cs_exist)
 {
     if (cs_exist == false)
@@ -170,55 +212,10 @@ void edit_cs(CS& cs, bool cs_exist)
     cout << "2. Stop workshop\n";
     cout << "0. Exit\n";
     option = int_input("Select one of the menu items: ");
-    int amount_ws;
-    if (option == 1)
-    {
-        if (cs.amount_ws_in_progress == cs.amount_ws)
-        {
-            cout << "All worksops already in progress!";
-        }
-        else
-        {
-            amount_ws = int_input("Enter amount of workshops you want to start: ");
-            if (amount_ws > (cs.amount_ws - cs.amount_ws_in_progress))
-            {
-                cout << "Amount of workshops you want to start cannot be greater than amount of available workshops!\n";
-            }
-            else
-            {
-                cs.amount_ws_in_progress += amount_ws;
-                cout << "The workshops started. Currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
-            }
-        }
-    }
-    else if (option == 2)
-    {
-        if (cs.amount_ws_in_progress == 0)
-        {
-            cout << "Not a single workshop had been launched yet!\n";
-        }
-        else
-        {
-            amount_ws = int_input("Enter amount of workshops you want to stop: ");
-            if (amount_ws > cs.amount_ws_in_progress)
-            {
-                cout << "Amount of workshops you want to stop cannot be greater than amount of workshops currently in progress!\n";
-            }
-            else
-            {
-                cs.amount_ws_in_progress -= amount_ws;
-                cout << "The workshops stopped. Currently in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
-            }
-        }
-    }
-    else if (option == 0)
-    {
-        return;
-    }
-    else
-    {
-        cout << "Wrong menu item.\n";
-    }
+    if (option == 1) start_workshop(cs, cs_exist);
+    else if (option == 2) stop_workshop(cs, cs_exist);
+    else if (option == 0) return;
+    else {cout << "Wrong menu item.\n";}
 }
 
 void edit_pipe(Pipe& pipe, bool pipe_exist)
@@ -329,12 +326,11 @@ bool load_pipe(ifstream& file, Pipe& out_pipe, bool& out_pipe_exist)
         cout << "File corrupted (invalid pipe flag)!\n";
         return false;
     }
-    file.ignore();
 
     if (pipe_flag == 1)
     {
         Pipe temp_pipe;
-        getline(file, temp_pipe.name_pipe);
+        getline(file >> ws, temp_pipe.name_pipe);
         file >> temp_pipe.length;
         file >> temp_pipe.diam;
         file >> temp_pipe.in_repair;
@@ -348,7 +344,6 @@ bool load_pipe(ifstream& file, Pipe& out_pipe, bool& out_pipe_exist)
             cout << "File contains invalid pipe values.\n";
             return false;
         }
-        file.ignore();
         out_pipe = temp_pipe;
         out_pipe_exist = true;
     }
@@ -373,20 +368,18 @@ bool load_cs(ifstream& file, CS& out_cs, bool& out_cs_exist)
         cout << "File is corrupted (invalid CS flag).\n";
         return false;
     }
-    file.ignore();
 
     if (cs_flag == 1)
     {
         CS temp_cs;
-        getline(file, temp_cs.name_cs);
+        getline(file >> ws, temp_cs.name_cs);
         file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress;
         if (file.fail())
         {
             cout << "File is corrupted (invalid CS data).\n";
             return false;
         }
-        file.ignore();
-        getline(file, temp_cs.class_cs);
+        getline(file >> ws, temp_cs.class_cs);
         if (temp_cs.name_cs == "" || temp_cs.class_cs == "" || temp_cs.amount_ws < 0 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws)
         {
             cout << "File contains invalid CS values.\n";
@@ -477,14 +470,8 @@ int main()
         else if (option == 5) edit_cs(cs, cs_exist);
         else if (option == 6) save_data(pipe, pipe_exist, cs, cs_exist);
         else if (option == 7) load_data(pipe, pipe_exist, cs, cs_exist);
-        else if (option == 0)
-        {
-            break;
-        }
-        else
-        {
-            cout << "Wrong menu item.\n";
-        }
+        else if (option == 0) break;
+        else {cout << "Wrong menu item.\n";}
     }
     return 0;
 }
