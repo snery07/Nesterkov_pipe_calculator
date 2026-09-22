@@ -155,7 +155,7 @@ void add_pipe(Pipe& pipe, bool& pipe_exist)
 
 // editing functions
 
-void start_workshop(CS& cs, bool cs_exist)
+void start_workshop(CS& cs)
 {
     int amount_ws;
     if (cs.amount_ws_in_progress == cs.amount_ws)
@@ -177,7 +177,7 @@ void start_workshop(CS& cs, bool cs_exist)
     }
 }
 
-void stop_workshop(CS& cs, bool cs_exist)
+void stop_workshop(CS& cs)
 {
     int amount_ws;
     if (cs.amount_ws_in_progress == 0)
@@ -212,8 +212,8 @@ void edit_cs(CS& cs, bool cs_exist)
     cout << "2. Stop workshop\n";
     cout << "0. Exit\n";
     option = int_input("Select one of the menu items: ");
-    if (option == 1) start_workshop(cs, cs_exist);
-    else if (option == 2) stop_workshop(cs, cs_exist);
+    if (option == 1) start_workshop(cs);
+    else if (option == 2) stop_workshop(cs);
     else if (option == 0) return;
     else {cout << "Wrong menu item.\n";}
 }
