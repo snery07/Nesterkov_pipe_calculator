@@ -24,6 +24,7 @@
     <ProjectGuid>{86c95e80-3fa5-432a-a075-4bb8c8e8fbcf}</ProjectGuid>
     <RootNamespace>pipecalc</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Nesterkov_pipe_calc</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
