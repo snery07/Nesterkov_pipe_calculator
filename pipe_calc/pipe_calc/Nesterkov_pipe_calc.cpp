@@ -471,7 +471,7 @@ int main()
         else if (option == 6) save_data(pipe, pipe_exist, cs, cs_exist);
         else if (option == 7) load_data(pipe, pipe_exist, cs, cs_exist);
         else if (option == 0) break;
-        else {cout << "Wrong menu item.\n";}
+        else cout << "Wrong menu item.\n";
     }
     return 0;
 }
