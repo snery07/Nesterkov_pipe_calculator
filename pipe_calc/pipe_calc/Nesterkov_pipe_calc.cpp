@@ -30,7 +30,7 @@ int int_input(string message)
     {
         cout << message;
         cin >> input;
-        if (cin.fail())
+        if (cin.fail() || cin.peek() != '\n')
         {
             cin.clear();
             cin.ignore(1111, '\n');
@@ -54,7 +54,7 @@ double double_input(string message)
     {
         cout << message;
         cin >> input;
-        if (cin.fail())
+        if (cin.fail() || cin.peek() != '\n')
         {
             cin.clear();
             cin.ignore(1111, '\n');
@@ -215,7 +215,7 @@ void edit_cs(CS& cs, bool cs_exist)
     if (option == 1) start_workshop(cs);
     else if (option == 2) stop_workshop(cs);
     else if (option == 0) return;
-    else {cout << "Wrong menu item.\n";}
+    else cout << "Wrong menu item.\n";
 }
 
 void edit_pipe(Pipe& pipe, bool pipe_exist)
@@ -400,6 +400,8 @@ bool load_cs(ifstream& file, CS& out_cs, bool& out_cs_exist)
     return true;
 }
 
+
+
 void load_data(Pipe& pipe, bool& pipe_exist, CS& cs, bool& cs_exist)
 {
     string name_file;
@@ -445,6 +447,9 @@ void menu()
     cout << " 6. Save data to a file\n";
     cout << " 7. Load data from a file\n";
     cout << " 0. Exit\n";
+    double pip;
+    pip = 9 % 15;
+    cout << pip;
 }
 
 int main()
@@ -456,7 +461,7 @@ int main()
     bool cs_exist = false;
     Pipe pipe;
     CS cs;
-
+    
     int option;
     while (true)
     {
@@ -475,3 +480,4 @@ int main()
     }
     return 0;
 }
+
