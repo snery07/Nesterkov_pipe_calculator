@@ -79,9 +79,12 @@ void edit_pipes(map<int, Pipe>& pipes)
     {
         bool status;
         status = bool_input("Set under repair status to");
-        for (int id : ids) pipes.at(id).in_repair = status;
-        if (status) log_action("Repair status of pipes " + ids_to_string(ids) + "set to yes");
-        else log_action("Repair status of pipes " + ids_to_string(ids) + "set to no");
+        for (int id : ids) 
+            pipes.at(id).in_repair = status;
+        if (status) 
+            log_action("Repair status of pipes " + ids_to_string(ids) + "set to yes");
+        else 
+            log_action("Repair status of pipes " + ids_to_string(ids) + "set to no");
     }
     else if (option == 2)
     {
@@ -96,8 +99,10 @@ void edit_pipes(map<int, Pipe>& pipes)
 void show_pipe(const Pipe& pipe)
 {
     cout << "ID " << pipe.id << " | " << pipe.name_pipe << " | length: " << pipe.length << " km | diameter: " << pipe.diam << " mm | in repair: ";
-    if (pipe.in_repair) cout << "yes\n";
-    else cout << "no\n";
+    if (pipe.in_repair) 
+        cout << "yes\n";
+    else 
+        cout << "no\n";
 }
 
 void show_all_pipes(const map<int, Pipe>& pipes)
@@ -107,7 +112,8 @@ void show_all_pipes(const map<int, Pipe>& pipes)
         cout << "No pipes yet.\n";
         return;
     }
-    for (const auto& item : pipes) show_pipe(item.second);
+    for (const auto& item : pipes)
+        show_pipe(item.second);
 }
 
 // file
