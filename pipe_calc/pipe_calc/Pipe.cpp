@@ -9,7 +9,7 @@ using namespace std;
 
 // addition function
 
-void add_pipe(unordered_map<int, Pipe>& pipes)
+void add_pipe(map<int, Pipe>& pipes)
 {
     Pipe pipe;
     pipe.id = next_id(pipes);
@@ -25,9 +25,9 @@ void add_pipe(unordered_map<int, Pipe>& pipes)
 
 // search function
 
-unordered_set<int> find_pipes(const unordered_map<int, Pipe>& pipes)
+set<int> find_pipes(const map<int, Pipe>& pipes)
 {
-    unordered_set<int> found;
+    set<int> found;
     int option;
     cout << "1. Search by name\n";
     cout << "2. Search by repair status\n";
@@ -41,12 +41,12 @@ unordered_set<int> find_pipes(const unordered_map<int, Pipe>& pipes)
     if (option == 1) name = string_input("Enter part of the name: ");
     if (option == 2) status = bool_input("Search pipes under repair");
 
-    for (int id : sorted_keys(pipes))
+    for (const auto& item : pipes)
     {
-        const Pipe& pipe = pipes.at(id);
+        const Pipe& pipe = item.second;
         if (option == 3 || (option == 1 && pipe.name_pipe.find(name) != string::npos) || (option == 2 && pipe.in_repair == status))
         {
-            found.insert(id);
+            found.insert(pipe.id);
             show_pipe(pipe);
         }
     }
@@ -60,9 +60,9 @@ unordered_set<int> find_pipes(const unordered_map<int, Pipe>& pipes)
 
 // editing function
 
-void edit_pipes(unordered_map<int, Pipe>& pipes)
+void edit_pipes(map<int, Pipe>& pipes)
 {
-    unordered_set<int> found = find_pipes(pipes);
+    set<int> found = find_pipes(pipes);
     if (found.empty()) return;
 
     int option;
@@ -72,7 +72,7 @@ void edit_pipes(unordered_map<int, Pipe>& pipes)
     option = int_input("Select one of the menu items: ", 0, 2);
     if (option == 0) return;
 
-    unordered_set<int> ids = choose_ids(found);
+    set<int> ids = choose_ids(found);
     if (ids.empty()) return;
 
     if (option == 1)
@@ -100,24 +100,24 @@ void show_pipe(const Pipe& pipe)
     else cout << "no\n";
 }
 
-void show_all_pipes(const unordered_map<int, Pipe>& pipes)
+void show_all_pipes(const map<int, Pipe>& pipes)
 {
     if (pipes.empty())
     {
         cout << "No pipes yet.\n";
         return;
     }
-    for (int id : sorted_keys(pipes)) show_pipe(pipes.at(id));
+    for (const auto& item : pipes) show_pipe(item.second);
 }
 
 // file
 
-void save_pipes(ofstream& file, const unordered_map<int, Pipe>& pipes)
+void save_pipes(ofstream& file, const map<int, Pipe>& pipes)
 {
     file << pipes.size() << "\n";
-    for (int id : sorted_keys(pipes))
+    for (const auto& item : pipes)
     {
-        const Pipe& pipe = pipes.at(id);
+        const Pipe& pipe = item.second;
         file << pipe.id << "\n";
         file << pipe.name_pipe << "\n";
         file << pipe.length << "\n";
@@ -126,7 +126,7 @@ void save_pipes(ofstream& file, const unordered_map<int, Pipe>& pipes)
     }
 }
 
-bool load_pipes(ifstream& file, unordered_map<int, Pipe>& pipes)
+bool load_pipes(ifstream& file, map<int, Pipe>& pipes)
 {
     int count;
     file >> count;

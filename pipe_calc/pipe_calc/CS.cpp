@@ -14,7 +14,7 @@ double idle_percent(const CS& cs)
 
 // addition function
 
-void add_cs(unordered_map<int, CS>& stations)
+void add_cs(map<int, CS>& stations)
 {
     CS cs;
     cs.id = next_id(stations);
@@ -30,9 +30,9 @@ void add_cs(unordered_map<int, CS>& stations)
 
 // search function (shows the found stations and returns their IDs)
 
-unordered_set<int> find_stations(const unordered_map<int, CS>& stations)
+set<int> find_stations(const map<int, CS>& stations)
 {
-    unordered_set<int> found;
+    set<int> found;
     int option;
     cout << "1. Search by name\n";
     cout << "2. Search by percent of idle workshops\n";
@@ -51,12 +51,12 @@ unordered_set<int> find_stations(const unordered_map<int, CS>& stations)
         max_percent = int_input("Maximum percent of idle workshops: ", min_percent, 100);
     }
 
-    for (int id : sorted_keys(stations))
+    for (const auto& item : stations)
     {
-        const CS& cs = stations.at(id);
+        const CS& cs = item.second;
         if (option == 3 || (option == 1 && cs.name_cs.find(name) != string::npos) || (option == 2 && idle_percent(cs) >= min_percent && idle_percent(cs) <= max_percent))
         {
-            found.insert(id);
+            found.insert(cs.id);
             show_cs(cs);
         }
     }
@@ -90,9 +90,9 @@ bool stop_workshop(CS& cs, int amount_ws)
     return true;
 }
 
-void edit_stations(unordered_map<int, CS>& stations)
+void edit_stations(map<int, CS>& stations)
 {
-    unordered_set<int> found = find_stations(stations);
+    set<int> found = find_stations(stations);
     if (found.empty()) return;
 
     int option;
@@ -103,7 +103,7 @@ void edit_stations(unordered_map<int, CS>& stations)
     option = int_input("Select one of the menu items: ", 0, 3);
     if (option == 0) return;
 
-    unordered_set<int> ids = choose_ids(found);
+    set<int> ids = choose_ids(found);
     if (ids.empty()) return;
 
     if (option == 3)
@@ -115,7 +115,7 @@ void edit_stations(unordered_map<int, CS>& stations)
     {
         int amount_ws;
         amount_ws = int_input("Amount of workshops (for each chosen station): ", 1);
-        for (int id : sorted_ids(ids))
+        for (int id : ids)
         {
             CS& cs = stations.at(id);
             bool done;
@@ -143,24 +143,24 @@ void show_cs(const CS& cs)
     cout << "ID " << cs.id << " | " << cs.name_cs << " | workshops in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << " | idle: " << idle_percent(cs) << "% | class: " << cs.class_cs << "\n";
 }
 
-void show_all_stations(const unordered_map<int, CS>& stations)
+void show_all_stations(const map<int, CS>& stations)
 {
     if (stations.empty())
     {
         cout << "No compressor stations yet.\n";
         return;
     }
-    for (int id : sorted_keys(stations)) show_cs(stations.at(id));
+    for (const auto& item : stations) show_cs(item.second);
 }
 
 // file
 
-void save_stations(ofstream& file, const unordered_map<int, CS>& stations)
+void save_stations(ofstream& file, const map<int, CS>& stations)
 {
     file << stations.size() << "\n";
-    for (int id : sorted_keys(stations))
+    for (const auto& item : stations)
     {
-        const CS& cs = stations.at(id);
+        const CS& cs = item.second;
         file << cs.id << "\n";
         file << cs.name_cs << "\n";
         file << cs.amount_ws << "\n";
@@ -169,7 +169,7 @@ void save_stations(ofstream& file, const unordered_map<int, CS>& stations)
     }
 }
 
-bool load_stations(ifstream& file, unordered_map<int, CS>& stations)
+bool load_stations(ifstream& file, map<int, CS>& stations)
 {
     int count;
     file >> count;

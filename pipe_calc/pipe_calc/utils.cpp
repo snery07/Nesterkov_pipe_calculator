@@ -139,23 +139,16 @@ string filename_input(string message)
 
 // helpers
 
-vector<int> sorted_ids(const unordered_set<int>& ids)
-{
-    vector<int> result(ids.begin(), ids.end());
-    sort(result.begin(), result.end());
-    return result;
-}
-
-string ids_to_string(const unordered_set<int>& ids)
+string ids_to_string(const set<int>& ids)
 {
     string result;
-    for (int id : sorted_ids(ids)) result += to_string(id) + " ";
+    for (int id : ids) result += to_string(id) + " ";
     return result;
 }
 
-unordered_set<int> choose_ids(const unordered_set<int>& found)
+set<int> choose_ids(const set<int>& found)
 {
-    unordered_set<int> chosen;
+    set<int> chosen;
     int option;
     cout << "1. All found\n";
     cout << "2. Choose by ID\n";

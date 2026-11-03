@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <string>
 #include <fstream>
-#include <unordered_map>
+#include <map>
 
 #include "Pipe.h"
 #include "CS.h"
@@ -12,7 +12,7 @@ using namespace std;
 
 // show function
 
-void show_all(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS>& stations)
+void show_all(const map<int, Pipe>& pipes, const map<int, CS>& stations)
 {
     show_all_pipes(pipes);
     show_all_stations(stations);
@@ -20,7 +20,7 @@ void show_all(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS
 
 // file
 
-void save_data(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS>& stations)
+void save_data(const map<int, Pipe>& pipes, const map<int, CS>& stations)
 {
     string name_file;
     name_file = filename_input("Enter the name of the file where the data should be saved: ");
@@ -44,7 +44,7 @@ void save_data(const unordered_map<int, Pipe>& pipes, const unordered_map<int, C
     log_action("Saved to file " + name_file);
 }
 
-void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations)
+void load_data(map<int, Pipe>& pipes, map<int, CS>& stations)
 {
     string name_file;
     name_file = filename_input("Enter the name of the file from which to load the data: ");
@@ -55,8 +55,8 @@ void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations
         return;
     }
 
-    unordered_map<int, Pipe> loaded_pipes;
-    unordered_map<int, CS> loaded_stations;
+    map<int, Pipe> loaded_pipes;
+    map<int, CS> loaded_stations;
 
     if (!load_pipes(file, loaded_pipes) || !load_stations(file, loaded_stations))
     {
@@ -92,8 +92,8 @@ int main()
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
 
-    unordered_map<int, Pipe> pipes;
-    unordered_map<int, CS> stations;
+    map<int, Pipe> pipes;
+    map<int, CS> stations;
     log_action("Program started");
 
     int option;
