@@ -127,9 +127,7 @@ string filename_input(string message)
     {
         input = string_input(message);
         if (input.length() < 3)
-        {
             log_error("File name is too short, must be like name.txt");
-        }
         else
         {
             return input;
@@ -139,16 +137,24 @@ string filename_input(string message)
 
 // helpers
 
-string ids_to_string(const set<int>& ids)
+vector<int> sorted_ids(const unordered_set<int>& ids)
 {
-    string result;
-    for (int id : ids) result += to_string(id) + " ";
+    vector<int> result(ids.begin(), ids.end());
+    sort(result.begin(), result.end());
     return result;
 }
 
-set<int> choose_ids(const set<int>& found)
+string ids_to_string(const unordered_set<int>& ids)
 {
-    set<int> chosen;
+    string result;
+    for (int id : sorted_ids(ids))
+        result += to_string(id) + " ";
+    return result;
+}
+
+unordered_set<int> choose_ids(const unordered_set<int>& found)
+{
+    unordered_set<int> chosen;
     int option;
     cout << "1. All found\n";
     cout << "2. Choose by ID\n";
@@ -161,9 +167,12 @@ set<int> choose_ids(const set<int>& found)
     while (true)
     {
         id = int_input("Enter ID (0 to finish): ");
-        if (id == 0) break;
-        if (found.count(id) == 0) log_error("This ID is not among the found objects.");
-        else if (chosen.count(id) != 0) log_error("This ID is already chosen.");
+        if (id == 0) 
+            break;
+        if (found.count(id) == 0) 
+            log_error("This ID is not among the found objects.");
+        else if (chosen.count(id) != 0) 
+            log_error("This ID is already chosen.");
         else chosen.insert(id);
     }
     if (chosen.empty())

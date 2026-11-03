@@ -7,27 +7,94 @@
 
 using namespace std;
 
+// getters and setters
+
+int Pipe::get_id() const
+{
+    return id;
+}
+
+string Pipe::get_name() const
+{
+    return name_pipe;
+}
+
+bool Pipe::get_in_repair() const
+{
+    return in_repair;
+}
+
+void Pipe::set_in_repair(bool status)
+{
+    in_repair = status;
+}
+
+// input and show
+
+void Pipe::input(int new_id)
+{
+    id = new_id;
+    cout << "\nEnter the data for the pipe:\n";
+    name_pipe = string_input("Kilometer mark (name): ");
+    length = double_input("Length (km): ");
+    diam = int_input("Diameter (mm): ", 1);
+    in_repair = bool_input("Under repair status");
+}
+
+void Pipe::show() const
+{
+    cout << "ID " << id << " | " << name_pipe << " | length: " << length << " km | diameter: " << diam << " mm | in repair: ";
+    if (in_repair)
+        cout << "yes\n";
+    else
+        cout << "no\n";
+}
+
+// file
+
+void Pipe::save(ofstream& file) const
+{
+    file << id << "\n";
+    file << name_pipe << "\n";
+    file << length << "\n";
+    file << diam << "\n";
+    file << in_repair << "\n";
+}
+
+bool Pipe::load(ifstream& file)
+{
+    file >> id;
+    getline(file >> ws, name_pipe);
+    file >> length;
+    file >> diam;
+    file >> in_repair;
+    if (file.fail())
+    {
+        return false;
+    }
+    if (id < 1 || name_pipe == "" || length <= 0 || diam <= 0)
+    {
+        return false;
+    }
+    return true;
+}
+
 // addition function
 
-void add_pipe(map<int, Pipe>& pipes)
+void add_pipe(unordered_map<int, Pipe>& pipes)
 {
     Pipe pipe;
-    pipe.id = next_id(pipes);
-    cout << "\nEnter the data for the pipe:\n";
-    pipe.name_pipe = string_input("Kilometer mark (name): ");
-    pipe.length = double_input("Length (km): ");
-    pipe.diam = int_input("Diameter (mm): ", 1);
-    pipe.in_repair = bool_input("Under repair status");
-    pipes.emplace(pipe.id, pipe);
-    cout << "Pipe added! ID: " << pipe.id << "\n";
-    log_action("Added pipe ID " + to_string(pipe.id) + " " + pipe.name_pipe);
+    pipe.input(next_id(pipes));
+    pipes.emplace(pipe.get_id(), pipe);
+    cout << "Pipe added! ID: " << pipe.get_id() << "\n";
+    log_action("Added pipe ID " + to_string(pipe.get_id()) + " " + pipe.get_name());
 }
 
 // search function
 
-set<int> find_pipes(const map<int, Pipe>& pipes)
+unordered_set<int> find_pipes(const unordered_map<int, Pipe>& pipes)
 {
-    set<int> found;
+    unordered_set<int> found;
     int option;
     cout << "1. Search by name\n";
     cout << "2. Search by repair status\n";
@@ -41,13 +108,13 @@ set<int> find_pipes(const map<int, Pipe>& pipes)
     if (option == 1) name = string_input("Enter part of the name: ");
     if (option == 2) status = bool_input("Search pipes under repair");
 
-    for (const auto& item : pipes)
+    for (int id : sorted_keys(pipes))
     {
-        const Pipe& pipe = item.second;
-        if (option == 3 || (option == 1 && pipe.name_pipe.find(name) != string::npos) || (option == 2 && pipe.in_repair == status))
+        const Pipe& pipe = pipes.at(id);
+        if (option == 3 || (option == 1 && pipe.get_name().find(name) != string::npos) || (option == 2 && pipe.get_in_repair() == status))
         {
-            found.insert(pipe.id);
-            show_pipe(pipe);
+            found.insert(id);
+            pipe.show();
         }
     }
     if (found.empty())
@@ -60,9 +127,9 @@ set<int> find_pipes(const map<int, Pipe>& pipes)
 
 // editing function
 
-void edit_pipes(map<int, Pipe>& pipes)
+void edit_pipes(unordered_map<int, Pipe>& pipes)
 {
-    set<int> found = find_pipes(pipes);
+    unordered_set<int> found = find_pipes(pipes);
     if (found.empty()) return;
 
     int option;
@@ -72,18 +139,18 @@ void edit_pipes(map<int, Pipe>& pipes)
     option = int_input("Select one of the menu items: ", 0, 2);
     if (option == 0) return;
 
-    set<int> ids = choose_ids(found);
+    unordered_set<int> ids = choose_ids(found);
     if (ids.empty()) return;
 
     if (option == 1)
     {
         bool status;
         status = bool_input("Set under repair status to");
-        for (int id : ids) 
-            pipes.at(id).in_repair = status;
-        if (status) 
+        for (int id : ids)
+            pipes.at(id).set_in_repair(status);
+        if (status)
             log_action("Repair status of pipes " + ids_to_string(ids) + "set to yes");
-        else 
+        else
             log_action("Repair status of pipes " + ids_to_string(ids) + "set to no");
     }
     else if (option == 2)
@@ -96,43 +163,27 @@ void edit_pipes(map<int, Pipe>& pipes)
 
 // show functions
 
-void show_pipe(const Pipe& pipe)
-{
-    cout << "ID " << pipe.id << " | " << pipe.name_pipe << " | length: " << pipe.length << " km | diameter: " << pipe.diam << " mm | in repair: ";
-    if (pipe.in_repair) 
-        cout << "yes\n";
-    else 
-        cout << "no\n";
-}
-
-void show_all_pipes(const map<int, Pipe>& pipes)
+void show_all_pipes(const unordered_map<int, Pipe>& pipes)
 {
     if (pipes.empty())
     {
         cout << "No pipes yet.\n";
         return;
     }
-    for (const auto& item : pipes)
-        show_pipe(item.second);
+    for (int id : sorted_keys(pipes))
+        pipes.at(id).show();
 }
 
 // file
 
-void save_pipes(ofstream& file, const map<int, Pipe>& pipes)
+void save_pipes(ofstream& file, const unordered_map<int, Pipe>& pipes)
 {
     file << pipes.size() << "\n";
-    for (const auto& item : pipes)
-    {
-        const Pipe& pipe = item.second;
-        file << pipe.id << "\n";
-        file << pipe.name_pipe << "\n";
-        file << pipe.length << "\n";
-        file << pipe.diam << "\n";
-        file << pipe.in_repair << "\n";
-    }
+    for (int id : sorted_keys(pipes))
+        pipes.at(id).save(file);
 }
 
-bool load_pipes(ifstream& file, map<int, Pipe>& pipes)
+bool load_pipes(ifstream& file, unordered_map<int, Pipe>& pipes)
 {
     int count;
     file >> count;
@@ -144,20 +195,11 @@ bool load_pipes(ifstream& file, map<int, Pipe>& pipes)
     for (int i = 0; i < count; i++)
     {
         Pipe temp_pipe;
-        file >> temp_pipe.id;
-        getline(file >> ws, temp_pipe.name_pipe);
-        file >> temp_pipe.length;
-        file >> temp_pipe.diam;
-        file >> temp_pipe.in_repair;
-        if (file.fail())
+        if (!temp_pipe.load(file) || pipes.count(temp_pipe.get_id()) != 0)
         {
             return false;
         }
-        if (temp_pipe.id < 1 || temp_pipe.name_pipe == "" || temp_pipe.length <= 0 || temp_pipe.diam <= 0 || pipes.count(temp_pipe.id) != 0)
-        {
-            return false;
-        }
-        pipes.emplace(temp_pipe.id, temp_pipe);
+        pipes.emplace(temp_pipe.get_id(), temp_pipe);
     }
     return true;
 }

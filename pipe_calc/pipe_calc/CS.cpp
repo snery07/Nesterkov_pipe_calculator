@@ -7,32 +7,108 @@
 
 using namespace std;
 
-double idle_percent(const CS& cs)
+// getters
+
+int CS::get_id() const
 {
-    return 100.0 * (cs.amount_ws - cs.amount_ws_in_progress) / cs.amount_ws;
+    return id;
+}
+
+string CS::get_name() const
+{
+    return name_cs;
+}
+
+int CS::get_amount_ws() const
+{
+    return amount_ws;
+}
+
+int CS::get_amount_ws_in_progress() const
+{
+    return amount_ws_in_progress;
+}
+
+double CS::idle_percent() const
+{
+    return 100.0 * (amount_ws - amount_ws_in_progress) / amount_ws;
+}
+
+// workshops
+
+bool CS::start_workshops(int amount)
+{
+    if (amount > (amount_ws - amount_ws_in_progress))
+        return false;
+    amount_ws_in_progress += amount;
+    return true;
+}
+
+bool CS::stop_workshops(int amount)
+{
+    if (amount > amount_ws_in_progress)
+        return false;
+    amount_ws_in_progress -= amount;
+    return true;
+}
+
+// input and show
+
+void CS::input(int new_id)
+{
+    id = new_id;
+    cout << "\nEnter the data for the compressor station:\n";
+    name_cs = string_input("Name: ");
+    amount_ws = int_input("Amount of workshops: ", 1);
+    amount_ws_in_progress = int_input("Amount of workshops in progress: ", 0, amount_ws);
+    class_cs = string_input("Class of compressor station: ");
+}
+
+void CS::show() const
+{
+    cout << "ID " << id << " | " << name_cs << " | workshops in progress: " << amount_ws_in_progress << "/" << amount_ws << " | idle: " << idle_percent() << "% | class: " << class_cs << "\n";
+}
+
+// file
+
+void CS::save(ofstream& file) const
+{
+    file << id << "\n";
+    file << name_cs << "\n";
+    file << amount_ws << "\n";
+    file << amount_ws_in_progress << "\n";
+    file << class_cs << "\n";
+}
+
+bool CS::load(ifstream& file)
+{
+    file >> id;
+    getline(file >> ws, name_cs);
+    file >> amount_ws >> amount_ws_in_progress;
+    getline(file >> ws, class_cs);
+    if (file.fail())
+        return false;
+    if (id < 1 || name_cs == "" || class_cs == "" || amount_ws < 1 || amount_ws_in_progress < 0 || amount_ws_in_progress > amount_ws)
+        return false;
+    return true;
 }
 
 // addition function
 
-void add_cs(map<int, CS>& stations)
+void add_cs(unordered_map<int, CS>& stations)
 {
     CS cs;
-    cs.id = next_id(stations);
-    cout << "\nEnter the data for the compressor station:\n";
-    cs.name_cs = string_input("Name: ");
-    cs.amount_ws = int_input("Amount of workshops: ", 1);
-    cs.amount_ws_in_progress = int_input("Amount of workshops in progress: ", 0, cs.amount_ws);
-    cs.class_cs = string_input("Class of compressor station: ");
-    stations.emplace(cs.id, cs);
-    cout << "Compressor station added! ID: " << cs.id << "\n";
-    log_action("Added CS ID " + to_string(cs.id) + " " + cs.name_cs);
+    cs.input(next_id(stations));
+    stations.emplace(cs.get_id(), cs);
+    cout << "Compressor station added! ID: " << cs.get_id() << "\n";
+    log_action("Added CS ID " + to_string(cs.get_id()) + " " + cs.get_name());
 }
 
 // search function (shows the found stations and returns their IDs)
 
-set<int> find_stations(const map<int, CS>& stations)
+unordered_set<int> find_stations(const unordered_map<int, CS>& stations)
 {
-    set<int> found;
+    unordered_set<int> found;
     int option;
     cout << "1. Search by name\n";
     cout << "2. Search by percent of idle workshops\n";
@@ -44,55 +120,34 @@ set<int> find_stations(const map<int, CS>& stations)
     string name;
     int min_percent = 0;
     int max_percent = 100;
-    if (option == 1) name = string_input("Enter part of the name: ");
+    if (option == 1)
+        name = string_input("Enter part of the name: ");
     if (option == 2)
     {
         min_percent = int_input("Minimum percent of idle workshops: ", 0, 100);
         max_percent = int_input("Maximum percent of idle workshops: ", min_percent, 100);
     }
 
-    for (const auto& item : stations)
+    for (int id : sorted_keys(stations))
     {
-        const CS& cs = item.second;
-        if (option == 3 || (option == 1 && cs.name_cs.find(name) != string::npos) || (option == 2 && idle_percent(cs) >= min_percent && idle_percent(cs) <= max_percent))
+        const CS& cs = stations.at(id);
+        if (option == 3 || (option == 1 && cs.get_name().find(name) != string::npos) || (option == 2 && cs.idle_percent() >= min_percent && cs.idle_percent() <= max_percent))
         {
-            found.insert(cs.id);
-            show_cs(cs);
+            found.insert(id);
+            cs.show();
         }
     }
     if (found.empty())
-    {
         cout << "No compressor stations found.\n";
-    }
     log_action("CS search, filter " + to_string(option) + ", found IDs: " + ids_to_string(found));
     return found;
-}   
-
-// editing functions
-
-bool start_workshop(CS& cs, int amount_ws)
-{
-    if (amount_ws > (cs.amount_ws - cs.amount_ws_in_progress))
-    {
-        return false;
-    }
-    cs.amount_ws_in_progress += amount_ws;
-    return true;
 }
 
-bool stop_workshop(CS& cs, int amount_ws)
-{
-    if (amount_ws > cs.amount_ws_in_progress)
-    {
-        return false;
-    }
-    cs.amount_ws_in_progress -= amount_ws;
-    return true;
-}
+// editing function
 
-void edit_stations(map<int, CS>& stations)
+void edit_stations(unordered_map<int, CS>& stations)
 {
-    set<int> found = find_stations(stations);
+    unordered_set<int> found = find_stations(stations);
     if (found.empty()) return;
 
     int option;
@@ -103,7 +158,7 @@ void edit_stations(map<int, CS>& stations)
     option = int_input("Select one of the menu items: ", 0, 3);
     if (option == 0) return;
 
-    set<int> ids = choose_ids(found);
+    unordered_set<int> ids = choose_ids(found);
     if (ids.empty()) return;
 
     if (option == 3)
@@ -115,21 +170,19 @@ void edit_stations(map<int, CS>& stations)
     {
         int amount_ws;
         amount_ws = int_input("Amount of workshops (for each chosen station): ", 1);
-        for (int id : ids)
+        for (int id : sorted_ids(ids))
         {
             CS& cs = stations.at(id);
             bool done;
-            if (option == 1) done = start_workshop(cs, amount_ws);
-            else done = stop_workshop(cs, amount_ws);
+            if (option == 1) done = cs.start_workshops(amount_ws);
+            else done = cs.stop_workshops(amount_ws);
 
             if (done == false)
-            {
-                log_error("CS " + to_string(cs.id) + ": not enough workshops, skipped.");
-            }
+                log_error("CS " + to_string(cs.get_id()) + ": not enough workshops, skipped.");
             else
             {
-                cout << "CS " << cs.id << ": workshops in progress " << cs.amount_ws_in_progress << "/" << cs.amount_ws << "\n";
-                log_action("CS " + to_string(cs.id) + " workshops in progress " + to_string(cs.amount_ws_in_progress));
+                cout << "CS " << cs.get_id() << ": workshops in progress " << cs.get_amount_ws_in_progress() << "/" << cs.get_amount_ws() << "\n";
+                log_action("CS " + to_string(cs.get_id()) + " workshops in progress " + to_string(cs.get_amount_ws_in_progress()));
             }
         }
     }
@@ -138,62 +191,39 @@ void edit_stations(map<int, CS>& stations)
 
 // show functions
 
-void show_cs(const CS& cs)
-{
-    cout << "ID " << cs.id << " | " << cs.name_cs << " | workshops in progress: " << cs.amount_ws_in_progress << "/" << cs.amount_ws << " | idle: " << idle_percent(cs) << "% | class: " << cs.class_cs << "\n";
-}
-
-void show_all_stations(const map<int, CS>& stations)
+void show_all_stations(const unordered_map<int, CS>& stations)
 {
     if (stations.empty())
     {
         cout << "No compressor stations yet.\n";
         return;
     }
-    for (const auto& item : stations) show_cs(item.second);
+    for (int id : sorted_keys(stations)) 
+        stations.at(id).show();
 }
 
 // file
 
-void save_stations(ofstream& file, const map<int, CS>& stations)
+void save_stations(ofstream& file, const unordered_map<int, CS>& stations)
 {
     file << stations.size() << "\n";
-    for (const auto& item : stations)
-    {
-        const CS& cs = item.second;
-        file << cs.id << "\n";
-        file << cs.name_cs << "\n";
-        file << cs.amount_ws << "\n";
-        file << cs.amount_ws_in_progress << "\n";
-        file << cs.class_cs << "\n";
-    }
+    for (int id : sorted_keys(stations)) 
+        stations.at(id).save(file);
 }
 
-bool load_stations(ifstream& file, map<int, CS>& stations)
+bool load_stations(ifstream& file, unordered_map<int, CS>& stations)
 {
     int count;
     file >> count;
     if (file.fail() || count < 0)
-    {
         return false;
-    }
 
     for (int i = 0; i < count; i++)
     {
         CS temp_cs;
-        file >> temp_cs.id;
-        getline(file >> ws, temp_cs.name_cs);
-        file >> temp_cs.amount_ws >> temp_cs.amount_ws_in_progress;
-        getline(file >> ws, temp_cs.class_cs);
-        if (file.fail())
-        {
+        if (!temp_cs.load(file) || stations.count(temp_cs.get_id()) != 0)
             return false;
-        }
-        if (temp_cs.id < 1 || temp_cs.name_cs == "" || temp_cs.class_cs == "" || temp_cs.amount_ws < 1 || temp_cs.amount_ws_in_progress < 0 || temp_cs.amount_ws_in_progress > temp_cs.amount_ws || stations.count(temp_cs.id) != 0)
-        {
-            return false;
-        }
-        stations.emplace(temp_cs.id, temp_cs);
+        stations.emplace(temp_cs.get_id(), temp_cs);
     }
     return true;
 }

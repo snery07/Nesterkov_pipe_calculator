@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
-#include <map>
-#include <set>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 
@@ -17,15 +19,30 @@ bool bool_input(string message);
 string string_input(string message);
 string filename_input(string message);
 
-// helpers
-string ids_to_string(const set<int>& ids);
-set<int> choose_ids(const set<int>& found);
+// helpers (IDs are sorted so the order is always the same)
+vector<int> sorted_ids(const unordered_set<int>& ids);
+string ids_to_string(const unordered_set<int>& ids);
+unordered_set<int> choose_ids(const unordered_set<int>& found);
 
 // templates
-// map is sorted by ID, so the last element has the biggest ID
 template <typename T>
-int next_id(const map<int, T>& items)
+vector<int> sorted_keys(const unordered_map<int, T>& items)
 {
-    if (items.empty()) return 1;
-    return items.rbegin()->first + 1;
+    vector<int> result;
+    for (const auto& item : items)
+        result.push_back(item.first);
+    sort(result.begin(), result.end());
+    return result;
+}
+
+template <typename T>
+int next_id(const unordered_map<int, T>& items)
+{
+    int id = 1;
+    for (const auto& item : items)
+    {
+        if (item.first >= id)
+            id = item.first + 1;
+    }
+    return id;
 }
