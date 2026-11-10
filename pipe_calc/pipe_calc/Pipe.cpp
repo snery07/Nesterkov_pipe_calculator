@@ -87,7 +87,6 @@ void add_pipe(unordered_map<int, Pipe>& pipes)
     pipe.input(next_id(pipes));
     pipes.emplace(pipe.get_id(), pipe);
     cout << "Pipe added! ID: " << pipe.get_id() << "\n";
-    log_action("Added pipe ID " + to_string(pipe.get_id()) + " " + pipe.get_name());
 }
 
 // search function
@@ -121,7 +120,6 @@ unordered_set<int> find_pipes(const unordered_map<int, Pipe>& pipes)
     {
         cout << "No pipes found.\n";
     }
-    log_action("Pipe search, filter " + to_string(option) + ", found IDs: " + ids_to_string(found));
     return found;
 }
 
@@ -148,15 +146,10 @@ void edit_pipes(unordered_map<int, Pipe>& pipes)
         status = bool_input("Set under repair status to");
         for (int id : ids)
             pipes.at(id).set_in_repair(status);
-        if (status)
-            log_action("Repair status of pipes " + ids_to_string(ids) + "set to yes");
-        else
-            log_action("Repair status of pipes " + ids_to_string(ids) + "set to no");
     }
     else if (option == 2)
     {
         for (int id : ids) pipes.erase(id);
-        log_action("Deleted pipes " + ids_to_string(ids));
     }
     cout << "Done.\n";
 }

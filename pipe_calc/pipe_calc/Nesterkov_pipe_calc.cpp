@@ -27,7 +27,7 @@ void save_data(const unordered_map<int, Pipe>& pipes, const unordered_map<int, C
     ofstream file(name_file);
     if (!file)
     {
-        log_error("Cannot open file " + name_file + " for save data.");
+        cout << "Cannot open file " << name_file << " for save data.\n";
         return;
     }
 
@@ -37,11 +37,10 @@ void save_data(const unordered_map<int, Pipe>& pipes, const unordered_map<int, C
     file.close();
     if (file.fail())
     {
-        log_error("Error while writing to file " + name_file + ". The data may be incomplete.");
+        cout << "Error while writing to file " << name_file << ". The data may be incomplete.\n";
         return;
     }
     cout << "The data was saved in file " << name_file << "\n";
-    log_action("Saved to file " + name_file);
 }
 
 void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations)
@@ -51,7 +50,7 @@ void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations
     ifstream file(name_file);
     if (!file)
     {
-        log_error("File " + name_file + " not found!");
+        cout << "File " << name_file << " not found!\n";
         return;
     }
 
@@ -60,7 +59,7 @@ void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations
 
     if (!load_pipes(file, loaded_pipes) || !load_stations(file, loaded_stations))
     {
-        log_error("File " + name_file + " is corrupted. The data was not loaded.");
+        cout << "File " << name_file << " is corrupted. The data was not loaded.\n";
         return;
     }
 
@@ -68,16 +67,6 @@ void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations
     pipes = loaded_pipes;
     stations = loaded_stations;
     cout << "Data loaded from " << name_file << "\n";
-    log_action("Loaded from file " + name_file);
-}
-
-// log replay
-
-void replay_log()
-{
-    string name_file;
-    name_file = string_input("Enter the name of the log file to replay: ");
-    start_replay(name_file);
 }
 
 // menu
@@ -93,7 +82,6 @@ void menu()
     cout << " 7. Edit / delete compressor stations\n";
     cout << " 8. Save data to a file\n";
     cout << " 9. Load data from a file\n";
-    cout << " 10. Replay actions from a log\n";
     cout << " 0. Exit\n";
 }
 
@@ -104,14 +92,12 @@ int main()
 
     unordered_map<int, Pipe> pipes;
     unordered_map<int, CS> stations;
-    log_action("Program started");
 
     int option;
     while (true)
     {
         menu();
-        option = int_input("\nSelect one of the menu items: ", 0, 10);
-        log_action("Menu item " + to_string(option));
+        option = int_input("\nSelect one of the menu items: ", 0, 9);
 
         if (option == 1) add_pipe(pipes);
         else if (option == 2) add_cs(stations);
@@ -122,10 +108,7 @@ int main()
         else if (option == 7) edit_stations(stations);
         else if (option == 8) save_data(pipes, stations);
         else if (option == 9) load_data(pipes, stations);
-        else if (option == 10) replay_log();
         else if (option == 0) break;
     }
-
-    log_action("Program finished");
     return 0;
 }

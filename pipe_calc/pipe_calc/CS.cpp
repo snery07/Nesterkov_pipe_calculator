@@ -101,7 +101,6 @@ void add_cs(unordered_map<int, CS>& stations)
     cs.input(next_id(stations));
     stations.emplace(cs.get_id(), cs);
     cout << "Compressor station added! ID: " << cs.get_id() << "\n";
-    log_action("Added CS ID " + to_string(cs.get_id()) + " " + cs.get_name());
 }
 
 // search function (shows the found stations and returns their IDs)
@@ -139,7 +138,6 @@ unordered_set<int> find_stations(const unordered_map<int, CS>& stations)
     }
     if (found.empty())
         cout << "No compressor stations found.\n";
-    log_action("CS search, filter " + to_string(option) + ", found IDs: " + ids_to_string(found));
     return found;
 }
 
@@ -164,7 +162,6 @@ void edit_stations(unordered_map<int, CS>& stations)
     if (option == 3)
     {
         for (int id : ids) stations.erase(id);
-        log_action("Deleted CS " + ids_to_string(ids));
     }
     else
     {
@@ -178,12 +175,9 @@ void edit_stations(unordered_map<int, CS>& stations)
             else done = cs.stop_workshops(amount_ws);
 
             if (done == false)
-                log_error("CS " + to_string(cs.get_id()) + ": not enough workshops, skipped.");
+                cout << "CS " << cs.get_id() << ": not enough workshops, skipped.\n";
             else
-            {
                 cout << "CS " << cs.get_id() << ": workshops in progress " << cs.get_amount_ws_in_progress() << "/" << cs.get_amount_ws() << "\n";
-                log_action("CS " + to_string(cs.get_id()) + " workshops in progress " + to_string(cs.get_amount_ws_in_progress()));
-            }
         }
     }
     cout << "Done.\n";
