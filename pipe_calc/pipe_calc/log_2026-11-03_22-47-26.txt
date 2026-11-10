@@ -1,0 +1,17 @@
+2026-11-03 22:47:26 Program started
+2026-11-03 22:47:29 Input: 1
+2026-11-03 22:47:29 Menu item 1
+2026-11-03 22:47:32 Input: 5
+2026-11-03 22:47:34 Input: 20.000000
+2026-11-03 22:47:36 Input: 54l,mn
+2026-11-03 22:47:36 Error: The value entered was not a integer number. Enter a valid value.
+2026-11-03 22:47:40 Input: 5,
+2026-11-03 22:47:40 Error: The value entered was not a integer number. Enter a valid value.
+2026-11-03 22:47:42 Input: 5
+2026-11-03 22:47:44 Input: k
+2026-11-03 22:47:44 Error: Enter y or n
+2026-11-03 22:47:46 Input: n
+2026-11-03 22:47:46 Added pipe ID 1 5
+2026-11-03 22:47:50 Input: 0
+2026-11-03 22:47:50 Menu item 0
+2026-11-03 22:47:50 Program finished

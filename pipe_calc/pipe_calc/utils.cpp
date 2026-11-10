@@ -1,11 +1,17 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <ctime>
 
 #include "utils.h"
 
 using namespace std;
+
+// replay of a log: while it goes, cin reads the inputs from replay_stream instead of the keyboard
+static istringstream replay_stream;
+static streambuf* console_buf = nullptr;
+static bool replaying = false;
 
 // log
 
@@ -35,6 +41,86 @@ void log_error(string text)
     log_action("Error: " + text);
 }
 
+// writes the input to the log, during a replay also shows it (nobody types it)
+void log_input(string text)
+{
+    if (replaying)
+        cout << text << "\n";
+    log_action("Input: " + text);
+}
+
+// replay
+
+void check_replay_end()
+{
+    if (replaying && (cin >> ws).eof())
+    {
+        cin.clear();
+        cin.rdbuf(console_buf);
+        replaying = false;
+        cout << "\nReplay finished, you can continue manually.\n";
+        log_action("Replay finished");
+    }
+}
+
+bool start_replay(string name_file)
+{
+    ifstream file(name_file);
+    if (!file)
+    {
+        log_error("Replay of " + name_file + " failed: file not found.");
+        return false;
+    }
+    vector<string> inputs;
+    string line;
+    bool skip = false;
+    while (getline(file, line))
+    {
+        if (line.length() < 20)
+            continue;
+        string text = line.substr(20);
+
+        if (text.substr(0, 7) == "Input: ")
+        {
+            if (!skip && text.length() > 7)
+                inputs.push_back(text.substr(7));
+        }
+        else if (text == "Menu item 10")
+        {
+            if (!inputs.empty())
+                inputs.pop_back();
+            skip = true;
+        }
+        else if (text.find("Replay of ") != string::npos)
+        {
+            skip = false;
+        }
+        else if (text == "Menu item 0")
+        {
+            if (!inputs.empty())
+                inputs.pop_back();
+            break;
+        }
+    }
+
+    if (inputs.empty())
+    {
+        log_error("Replay of " + name_file + " failed: no actions in the file.");
+        return false;
+    }
+
+    string all_inputs;
+    for (string input : inputs)
+        all_inputs += input + "\n";
+    replay_stream.clear();
+    replay_stream.str(all_inputs);
+    console_buf = cin.rdbuf(replay_stream.rdbuf());
+    replaying = true;
+    cout << "Replay of " << name_file << " started.\n";
+    log_action("Replay of " + name_file + " started");
+    return true;
+}
+
 // functions for check input
 
 int int_input(string message, int min_value, int max_value)
@@ -43,6 +129,7 @@ int int_input(string message, int min_value, int max_value)
     string rest;
     while (true)
     {
+        check_replay_end();
         cout << message;
         cin >> input;
         if (cin.fail() || cin.peek() != '\n')
@@ -51,17 +138,17 @@ int int_input(string message, int min_value, int max_value)
             if (!cin.fail()) wrong = to_string(input);
             cin.clear();
             getline(cin, rest);
-            log_action("Input: " + wrong + rest);
+            log_input(wrong + rest);
             log_error("The value entered was not a integer number. Enter a valid value.");
         }
         else if (input < min_value || input > max_value)
         {
-            log_action("Input: " + to_string(input));
+            log_input(to_string(input));
             log_error("The value must be from " + to_string(min_value) + " to " + to_string(max_value) + ".");
         }
         else
         {
-            log_action("Input: " + to_string(input));
+            log_input(to_string(input));
             return input;
         }
     }
@@ -73,6 +160,7 @@ double double_input(string message)
     string rest;
     while (true)
     {
+        check_replay_end();
         cout << message;
         cin >> input;
         if (cin.fail() || cin.peek() != '\n')
@@ -81,17 +169,17 @@ double double_input(string message)
             if (!cin.fail()) wrong = to_string(input);
             cin.clear();
             getline(cin, rest);
-            log_action("Input: " + wrong + rest);
+            log_input(wrong + rest);
             log_error("The value entered was not a number. Enter a valid value.");
         }
         else if (input <= 0)
         {
-            log_action("Input: " + to_string(input));
+            log_input(to_string(input));
             log_error("The value must be positive. Enter a valid value.");
         }
         else
         {
-            log_action("Input: " + to_string(input));
+            log_input(to_string(input));
             return input;
         }
     }
@@ -102,9 +190,10 @@ bool bool_input(string message)
     string input;
     while (true)
     {
+        check_replay_end();
         cout << message << " (y/n): ";
         getline(cin >> ws, input);
-        log_action("Input: " + input);
+        log_input(input);
         if (input == "y") return true;
         if (input == "n") return false;
         log_error("Enter y or n");
@@ -114,25 +203,11 @@ bool bool_input(string message)
 string string_input(string message)
 {
     string input;
+    check_replay_end();
     cout << message;
     getline(cin >> ws, input);
-    log_action("Input: " + input);
+    log_input(input);
     return input;
-}
-
-string filename_input(string message)
-{
-    string input;
-    while (true)
-    {
-        input = string_input(message);
-        if (input.length() < 3)
-            log_error("File name is too short, must be like name.txt");
-        else
-        {
-            return input;
-        }
-    }
 }
 
 // helpers

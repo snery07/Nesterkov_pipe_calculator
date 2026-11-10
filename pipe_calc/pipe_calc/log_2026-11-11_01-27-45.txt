@@ -1,0 +1,26 @@
+2026-11-11 01:27:45 Program started
+2026-11-11 01:27:49 Input: 10
+2026-11-11 01:27:49 Menu item 10
+2026-11-11 01:28:10 Input: log_2026-11-03_22-45-59.txt
+2026-11-11 01:28:10 Error: Replay of log_2026-11-03_22-45-59.txt failed: no actions in the file.
+2026-11-11 01:28:37 Input: 10
+2026-11-11 01:28:37 Menu item 10
+2026-11-11 01:28:40 Input: log_2026-11-03_22-39-45.txt
+2026-11-11 01:28:40 Replay of log_2026-11-03_22-39-45.txt started
+2026-11-11 01:28:40 Input: 1
+2026-11-11 01:28:40 Menu item 1
+2026-11-11 01:28:40 Input: 8
+2026-11-11 01:28:40 Input: 8.000000
+2026-11-11 01:28:40 Input: 22л
+2026-11-11 01:28:40 Error: The value entered was not a integer number. Enter a valid value.
+2026-11-11 01:28:40 Input: 4э
+2026-11-11 01:28:40 Error: The value entered was not a integer number. Enter a valid value.
+2026-11-11 01:28:40 Input: 5
+2026-11-11 01:28:40 Input: н
+2026-11-11 01:28:40 Error: Enter y or n
+2026-11-11 01:28:40 Input: y
+2026-11-11 01:28:40 Added pipe ID 1 8
+2026-11-11 01:28:40 Replay finished
+2026-11-11 01:28:56 Input: 0
+2026-11-11 01:28:56 Menu item 0
+2026-11-11 01:28:56 Program finished

@@ -1,0 +1,8 @@
+2026-11-03 22:45:59 Program started
+2026-11-03 22:46:06 Input: 10
+2026-11-03 22:46:06 Menu item 10
+2026-11-03 22:46:30 Input: log_2026-11-03_22-45-59.txt
+2026-11-03 22:46:30 Error: Replay of log_2026-11-03_22-45-59.txt failed: no actions in the file.
+2026-11-03 22:47:20 Input: 0
+2026-11-03 22:47:20 Menu item 0
+2026-11-03 22:47:20 Program finished

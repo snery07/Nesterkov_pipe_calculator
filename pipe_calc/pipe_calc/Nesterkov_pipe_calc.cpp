@@ -23,7 +23,7 @@ void show_all(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS
 void save_data(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS>& stations)
 {
     string name_file;
-    name_file = filename_input("Enter the name of the file where the data should be saved: ");
+    name_file = string_input("Enter the name of the file where the data should be saved: ");
     ofstream file(name_file);
     if (!file)
     {
@@ -47,7 +47,7 @@ void save_data(const unordered_map<int, Pipe>& pipes, const unordered_map<int, C
 void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations)
 {
     string name_file;
-    name_file = filename_input("Enter the name of the file from which to load the data: ");
+    name_file = string_input("Enter the name of the file from which to load the data: ");
     ifstream file(name_file);
     if (!file)
     {
@@ -71,6 +71,15 @@ void load_data(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations
     log_action("Loaded from file " + name_file);
 }
 
+// log replay
+
+void replay_log()
+{
+    string name_file;
+    name_file = string_input("Enter the name of the log file to replay: ");
+    start_replay(name_file);
+}
+
 // menu
 
 void menu()
@@ -84,6 +93,7 @@ void menu()
     cout << " 7. Edit / delete compressor stations\n";
     cout << " 8. Save data to a file\n";
     cout << " 9. Load data from a file\n";
+    cout << " 10. Replay actions from a log\n";
     cout << " 0. Exit\n";
 }
 
@@ -100,7 +110,7 @@ int main()
     while (true)
     {
         menu();
-        option = int_input("\nSelect one of the menu items: ", 0, 9);
+        option = int_input("\nSelect one of the menu items: ", 0, 10);
         log_action("Menu item " + to_string(option));
 
         if (option == 1) add_pipe(pipes);
@@ -112,6 +122,7 @@ int main()
         else if (option == 7) edit_stations(stations);
         else if (option == 8) save_data(pipes, stations);
         else if (option == 9) load_data(pipes, stations);
+        else if (option == 10) replay_log();
         else if (option == 0) break;
     }
 

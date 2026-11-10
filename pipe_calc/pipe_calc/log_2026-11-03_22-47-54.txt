@@ -1,0 +1,26 @@
+2026-11-03 22:47:54 Program started
+2026-11-03 22:47:58 Input: 10
+2026-11-03 22:47:58 Menu item 10
+2026-11-03 22:48:24 Input: log_2026-11-03_22-47-26.txt
+2026-11-03 22:48:24 Replay of log_2026-11-03_22-47-26.txt started
+2026-11-03 22:48:24 Input: 1
+2026-11-03 22:48:24 Menu item 1
+2026-11-03 22:48:24 Input: 5
+2026-11-03 22:48:24 Input: 20.000000
+2026-11-03 22:48:24 Input: 54l,mn
+2026-11-03 22:48:24 Error: The value entered was not a integer number. Enter a valid value.
+2026-11-03 22:48:24 Input: 5,
+2026-11-03 22:48:24 Error: The value entered was not a integer number. Enter a valid value.
+2026-11-03 22:48:24 Input: 5
+2026-11-03 22:48:24 Input: k
+2026-11-03 22:48:24 Error: Enter y or n
+2026-11-03 22:48:24 Input: n
+2026-11-03 22:48:24 Added pipe ID 1 5
+2026-11-03 22:48:24 Replay finished
+2026-11-03 22:50:23 Input: 9
+2026-11-03 22:50:23 Menu item 9
+2026-11-03 22:50:26 Input: 0
+2026-11-03 22:50:26 Error: File 0 not found!
+2026-11-03 22:50:31 Input: 0
+2026-11-03 22:50:31 Menu item 0
+2026-11-03 22:50:31 Program finished

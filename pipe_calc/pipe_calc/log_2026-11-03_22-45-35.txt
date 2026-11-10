@@ -1,0 +1,13 @@
+2026-11-03 22:45:35 Program started
+2026-11-03 22:45:37 Input: 1
+2026-11-03 22:45:37 Menu item 1
+2026-11-03 22:45:40 Input: 5
+2026-11-03 22:45:42 Input: '
+2026-11-03 22:45:42 Error: The value entered was not a number. Enter a valid value.
+2026-11-03 22:45:43 Input: 4.000000
+2026-11-03 22:45:46 Input: 40
+2026-11-03 22:45:49 Input: y
+2026-11-03 22:45:49 Added pipe ID 1 5
+2026-11-03 22:45:54 Input: 0
+2026-11-03 22:45:54 Menu item 0
+2026-11-03 22:45:54 Program finished
