@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -8,9 +9,17 @@ using namespace std;
 
 // log: everything the user enters, one input per line
 
+string log_path()
+{
+    char path[MAX_PATH];
+    GetModuleFileNameA(NULL, path, MAX_PATH);
+    string exe_path = path;
+    return exe_path.substr(0, exe_path.find_last_of('\\') + 1) + "log.txt";
+}
+
 void writelog(const string& text)
 {
-    ofstream file("log.txt", ios::app);
+    ofstream file(log_path(), ios::app);
     if (file) file << text << "\n";
 }
 
