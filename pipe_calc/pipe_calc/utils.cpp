@@ -8,6 +8,7 @@
 using namespace std;
 
 // log: everything the user enters, one input per line
+//source: https://gist.github.com/JustVugg/46aabef46cbd50191da5c9ef6e703317
 
 string log_path()
 {
@@ -138,7 +139,7 @@ unordered_set<int> choose_ids(const unordered_set<int>& found)
             cout << "This ID is not among the found objects.\n";
         else if (chosen.count(id) != 0)
             cout << "This ID is already chosen.\n";
-        else chosen.insert(id);
+        else chosen.emplace(id);
     }
     if (chosen.empty())
     {

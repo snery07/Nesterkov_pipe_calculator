@@ -112,7 +112,7 @@ unordered_set<int> find_pipes(const unordered_map<int, Pipe>& pipes)
         const Pipe& pipe = pipes.at(id);
         if (option == 3 || (option == 1 && pipe.get_name().find(name) != string::npos) || (option == 2 && pipe.get_in_repair() == status))
         {
-            found.insert(id);
+            found.emplace(id);
             pipe.show();
         }
     }

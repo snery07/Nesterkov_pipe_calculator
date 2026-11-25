@@ -132,7 +132,7 @@ unordered_set<int> find_stations(const unordered_map<int, CS>& stations)
         const CS& cs = stations.at(id);
         if (option == 3 || (option == 1 && cs.get_name().find(name) != string::npos) || (option == 2 && cs.idle_percent() >= min_percent && cs.idle_percent() <= max_percent))
         {
-            found.insert(id);
+            found.emplace(id);
             cs.show();
         }
     }
@@ -157,7 +157,8 @@ void edit_stations(unordered_map<int, CS>& stations)
     if (option == 0) return;
 
     unordered_set<int> ids = choose_ids(found);
-    if (ids.empty()) return;
+    if (ids.empty()) 
+        return;
 
     if (option == 3)
     {
